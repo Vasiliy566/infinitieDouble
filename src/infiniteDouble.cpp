@@ -171,9 +171,11 @@ InfiniteDouble InfiniteDouble::operator*(const InfiniteDouble &id) {
     while (res.digits[res.digits.size() - 1] == 0) { // from right
         res.digits.pop_back();
     }
-    while (res.digits[0] == 0) { // from left
-        res.digits.erase(res.digits.begin());
-        res.exponent--;
+    if (res.exponent > 0){
+        while (res.digits[0] == 0) { // from left
+            res.digits.erase(res.digits.begin());
+            res.exponent--;
+        }
     }
     return res;
 }
