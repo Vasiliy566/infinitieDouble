@@ -5,7 +5,7 @@
 
 TEST(infititeDouble, main) {
     InfiniteDouble a = InfiniteDouble("0.12345670");
-    //std::cout << "[" << a << "]" << std::endl;
+    std::cout << "[" << a << "]" << std::endl;
     ASSERT_EQ(a, InfiniteDouble("0.1234567"));
     a = InfiniteDouble("123.12304");
     std::cout << "[" << a << "]" << std::endl;
@@ -18,6 +18,8 @@ TEST(infititeDouble, main) {
     std::cout << "[" << a << "]" << std::endl;
     a = InfiniteDouble("10000");
     std::cout << "[" << a << "]" << std::endl;
+    a = InfiniteDouble("0");
+    std::cout << "[" << a << "]" << std::endl;
 
     ASSERT_TRUE(InfiniteDouble("0.001") < InfiniteDouble("0.02"));
 
@@ -27,7 +29,7 @@ TEST(infititeDouble, main) {
 }
 
 TEST(infititeDouble, mulConstants) {
-    std::string testData[10][3] = {
+    std::string testData[11][3] = {
             {"11.999",  "9.99",      "119.87001"},
             {"18.222",  "2.888",     "52.625136"},
             {"100000",  "0.1",       "10000"},
@@ -37,9 +39,10 @@ TEST(infititeDouble, mulConstants) {
             {"1.2",     "1.2",       "1.44"},
             {"5.17",    "1.11",      "5.7387"},
             {"10",      "0.01",      "0.1"},
-            {"10",      "0.0000001", "0.000001"}
+            {"10",      "0.0000001", "0.000001"},
+            {"0.09", "0.01", "0.0009"}
     };
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 11; i++) {
         InfiniteDouble a = InfiniteDouble(testData[i][0]);
         InfiniteDouble b = InfiniteDouble(testData[i][1]);
         InfiniteDouble c = InfiniteDouble(testData[i][2]);
@@ -49,7 +52,8 @@ TEST(infititeDouble, mulConstants) {
 }
 
 TEST(infititeDouble, sumConstants) {
-    std::string testData[9][3] = {
+    std::string testData[11][3] = {
+            {"0.99", "0.01", "1.0"},
             {"1.5",    "0.5",   "2.0"},
             {"0.001",  "0.02",  "0.021"},
             {"1.001",  "0.001", "1.002"},
@@ -58,12 +62,14 @@ TEST(infititeDouble, sumConstants) {
             {"0.002",  "0.001", "0.003"},
             {"1.2",    "1.2",   "2.4"},
             {"5.17",   "1.11",  "6.28"},
-
-
             {"18.222", "2.888", "21.11"},
+
+            {"0.09", "0.01", "0.1"}
+
     };
 
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 11; i++) {
+        std::cout << i << std::endl;
         InfiniteDouble a = InfiniteDouble(testData[i][0]);
         InfiniteDouble b = InfiniteDouble(testData[i][1]);
         InfiniteDouble c = InfiniteDouble(testData[i][2]);
