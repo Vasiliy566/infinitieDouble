@@ -23,44 +23,76 @@ InfiniteDouble::InfiniteDouble(std::string in) {
             signAmount++;
         }
     }
-    assert(pointAmount <= 1);
     assert(signAmount <= 1);
+
     long exponent_ = 0;
     std::vector<int> digits_;
     int start = 0;
+
     if (in[0] == '-') {
         sign = -1;
         start++;
     } else {
         sign = 1;
     }
-
-    if (in[start] == '0') {
-        if (in.length() == start + 1) {
-            exponent_ = 0;
-        } else {
-            assert(in[start + 1] == '.');
-            assert(in.length() > start + 2);
-            start += 2;
-            while (in[start] == '0' && start < in.length()) {
-                start++;
-                exponent_--;
+    if (pointAmount < 1) {
+        for (int i = 0; i < in.length(); i++) {
+            if (isdigit(in[i])) {
+                exponent_++;
+                digits_.push_back((int) in[i] - 48);
             }
         }
     } else {
-        while (in[start] != '.') {
-            start++;
-            exponent_++;
+        if (in[start] == '0') {
+            if (in.length() == start + 1) {
+                exponent_ = 0;
+            } else {
+                assert(in[start + 1] == '.');
+                assert(in.length() > start + 2);
+                start += 2;
+                while (in[start] == '0' && start < in.length()) {
+                    start++;
+                    exponent_--;
+                }
+            }
+        } else {
+            while (in[start] != '.') {
+                start++;
+                exponent_++;
+            }
+        }
+
+        for (int i = 0; i < in.length(); i++) {
+            if (isdigit(in[i])) {
+                digits_.push_back((int) in[i] - 48);
+            }
+        }
+
+        bool isZero = true;
+        for (int i = 0; i < digits_.size(); i++) {
+            if (digits_[i] != 0) {
+                isZero = false;
+                break;
+            }
+        }
+        if (isZero) {
+            *this = InfiniteDouble(); // default zero
+            return;
+        }
+        while (digits_[digits_.size() - 1] == 0) { // from right
+            digits_.pop_back();
+        }
+    }
+    if (exponent_ > 0) {
+        while (digits_[0] == 0) { // from left
+            digits_.erase(digits_.begin());
+            exponent_--;
         }
     }
 
-    for (int i = 0; i < in.length(); i++) {
-        if (isdigit(in[i])) {
-            digits_.push_back((int) in[i] - 48);
-        }
-    }
     digits = std::move(digits_);
     exponent = exponent_;
+    assert(sign == 1);
 }
 
 InfiniteDouble::InfiniteDouble(double d) {
@@ -74,52 +106,39 @@ InfiniteDouble::InfiniteDouble(double d) {
 }
 
 InfiniteDouble InfiniteDouble::operator+(const InfiniteDouble &id) {
+    std::vector<int> a = std::max(*this, id).digits;
+    std::vector<int> b = std::min(*this, id).digits;
+    long exp1 = std::max(exponent, id.exponent);
+    long exp2 = std::min(exponent, id.exponent);;
+
+    if (exp2 < 0 && exp1 > 0)
+        exp2 = 1;
+
+    if (!((exp1 <= 1) && (exp2 <= 1)))
+        while (exp1 != exp2) {
+            b.insert(b.begin(), 0);
+            exp2++;
+        }
+
+    for (size_t i = 0; i < std::max(a.size(), b.size()); ++i) {
+        if (i == a.size()) {
+            a.push_back(0);
+        }
+
+        if (i < b.size()) {
+            a[i] += b[i];
+        }
+    }
+
+    for (size_t i = a.size() - 1; i > 0; i--) {
+        a[i - 1] += a[i] / 10;
+        a[i] %= 10;
+    }
+
     InfiniteDouble res;
-    long exp1 = exponent;
-    long exp2 = id.exponent;
-    long exp = std::max(exp1, exp2);
-    std::vector<int> digits1(digits);
-    std::vector<int> digits2(id.digits);
-
-    while (exp1 != exp) {
-        digits1.insert(digits1.begin(), 0);
-        exp1++;
-    }
-
-    while (exp2 != exp) {
-        digits2.insert(digits2.begin(), 0);
-        exp2++;
-    }
-
-    int size = std::max(digits1.size(), digits2.size());
-
-    while (digits1.size() != size) {
-        digits1.push_back(0);
-    }
-
-    while (digits2.size() != size) {
-        digits2.push_back(0);
-    }
-
-    size_t len = 1 + size;
-
-    res.sign = sign;
-    res.digits = std::vector<int>(len, 0);
-
-    for (size_t i = 0; i < size; i++) {
-        res.digits[i + 1] = digits1[i] + digits2[i];
-    }
-
-    for (size_t i = len - 1; i > 0; i--) {
-        res.digits[i - 1] += res.digits[i] / 10;
-        res.digits[i] %= 10;
-    }
-
-    res.exponent = exp + 1;
-    if (res.exponent < 0){
-        res.digits.erase(res.digits.begin());
-        res.exponent --;
-    }
+    res.sign = 1;
+    res.digits = a;
+    res.exponent = std::max(id.exponent, this->exponent);
     bool isZero = true;
     for (int i = 0; i < res.digits.size(); i++) {
         if (res.digits[i] != 0) {
@@ -130,34 +149,60 @@ InfiniteDouble InfiniteDouble::operator+(const InfiniteDouble &id) {
     if (isZero) {
         return InfiniteDouble(); // default zero
     }
-    while (res.digits[res.digits.size() - 1] == 0) { // from right
-        res.digits.pop_back();
-    }
-    if (res.exponent > 0){
-        while (res.digits[0] == 0) { // from left
-           res.digits.erase(res.digits.begin());
-            res.exponent--;
+
+    if (res.exponent > 1) {
+        while (res.digits[0] == 0 && res.exponent > 1) { // from left
+            res.digits.erase(res.digits.begin());
+            //res.exponent--;
         }
     }
+    while (res.digits[res.digits.size() - 1] == 0 && (res.digits.size() > std::abs(res.exponent))) { // from right
+        res.digits.pop_back();
+    }
 
+
+    if (res.exponent < 1) {
+        int zeroes = 0;
+        while (true) {
+            zeroes = 0;
+            while (res.digits[zeroes] == 0) {
+                zeroes++;
+            }
+            if (zeroes - 1 > (std::abs(res.exponent))) {
+                res.digits.erase(res.digits.begin());
+            } else { break; }
+        }
+    }
     return res;
 }
 
 InfiniteDouble InfiniteDouble::operator*(const InfiniteDouble &id) {
+    size_t len = digits.size() + id.digits.size();
     InfiniteDouble res;
     res.sign = sign * id.sign;
-    res.digits = std::vector<int>(digits.size() + id.digits.size(), 0);
-    res.exponent = exponent + id.exponent;
-
+    res.digits = std::vector<int>(len, 0);
+    res.exponent = id.exponent + exponent - 1;
     for (size_t i = 0; i < digits.size(); i++) {
         for (size_t j = 0; j < id.digits.size(); j++) {
             res.digits[i + j + 1] += digits[i] * id.digits[j];
         }
     }
-    for (size_t i = digits.size() + id.digits.size() - 1; i > 0; i--) {
+    int first_zero = -1;
+    for (size_t i = 0; i < len; i++) {
+        if (res.digits[i] != 0) {
+            first_zero = i - 1;
+            break;
+        }
+    }
+    assert(first_zero != -1);
+    for (size_t i = len - 1; i > 0; i--) {
         res.digits[i - 1] += res.digits[i] / 10;
         res.digits[i] %= 10;
     }
+    if (res.digits[first_zero] != 0) {
+        res.exponent++;
+    }
+
     bool isZero = true;
     for (int i = 0; i < res.digits.size(); i++) {
         if (res.digits[i] != 0) {
@@ -168,13 +213,30 @@ InfiniteDouble InfiniteDouble::operator*(const InfiniteDouble &id) {
     if (isZero) {
         return InfiniteDouble(); // default zero
     }
-    while (res.digits[res.digits.size() - 1] == 0) { // from right
+
+    if (res.exponent > 1) {
+        while (res.digits[0] == 0 && res.exponent > 1) { // from left
+            res.digits.erase(res.digits.begin());
+            //res.exponent--;
+        }
+    }
+    while (res.digits[res.digits.size() - 1] == 0 && (res.digits.size() > std::abs(res.exponent))) { // from right
         res.digits.pop_back();
     }
-    if (res.exponent > 0){
-        while (res.digits[0] == 0) { // from left
-            res.digits.erase(res.digits.begin());
-            res.exponent--;
+
+    if (res.digits[0] == 0) {
+        res.digits.erase(res.digits.begin());
+    }
+    if (res.exponent < 1) {
+        int zeroes = 0;
+        while (true) {
+            zeroes = 0;
+            while (res.digits[zeroes] == 0) {
+                zeroes++;
+            }
+            if (zeroes - 1 > (std::abs(res.exponent))) {
+                res.digits.erase(res.digits.begin());
+            } else { break; }
         }
     }
     return res;
@@ -223,11 +285,14 @@ bool InfiniteDouble::operator==(const InfiniteDouble &id) const {
 }
 
 bool InfiniteDouble::operator>(const InfiniteDouble &id) const {
+
     if (sign != id.sign)
         return sign > id.sign;
 
-    if (exponent != id.exponent)
-        return (exponent > id.exponent) ^ (sign == -1);
+    if (exponent != id.exponent) {
+        bool b = (exponent > id.exponent);
+        return (exponent > id.exponent);
+    }
 
     std::vector<int> d1(digits);
     std::vector<int> d2(id.digits);
@@ -247,7 +312,7 @@ bool InfiniteDouble::operator>(const InfiniteDouble &id) const {
 }
 
 bool InfiniteDouble::operator<(const InfiniteDouble &id) const {
-    return (*this > id || *this == id);
+    return !(*this > id || *this == id);
 }
 
 bool InfiniteDouble::operator>=(const InfiniteDouble &id) const {
