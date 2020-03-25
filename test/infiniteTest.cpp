@@ -33,13 +33,13 @@ TEST(infititeDouble, main) {
 
 TEST(infititeDouble, mulConstants) {
     std::string testData[11][3] = {
+            {"1.2",     "1.2",       "1.44"},
             {"11.999",  "9.99",      "119.87001"},
             {"18.222",  "2.888",     "52.625136"},
             {"100000",  "0.1",       "10000"},
             {"0.02",    "0.01",      "0.0002"},
             {"0.002",   "0.007",     "0.000014"},
             {"0.99999", "0.99999",   "0.9999800001"},
-            {"1.2",     "1.2",       "1.44"},
             {"5.17",    "1.11",      "5.7387"},
             {"10",      "0.01",      "0.1"},
             {"10",      "0.0000001", "0.000001"},
@@ -55,7 +55,7 @@ TEST(infititeDouble, mulConstants) {
 }
 
 TEST(infititeDouble, sumConstants) {
-    std::string testData[11][3] = {
+    std::string testData[12][3] = {
             {"0.001",  "0.02",  "0.021"},
             {"1.001",  "0.001", "1.002"},
             {"11.999", "9.99",  "21.989"},
@@ -64,13 +64,13 @@ TEST(infititeDouble, sumConstants) {
             {"1.2",    "1.2",   "2.4"},
             {"5.17",   "1.11",  "6.28"},
             {"18.222", "2.888", "21.11"},
-            {"0.99",   "0.01",  "1"},
             {"0.09",   "0.01",  "0.1"},
+            {"0.99",   "0.01",  "1"},
+            {"9.9",    "0.2",   "10.1"},
             {"1.5",    "0.5",   "2.0"}
     };
 
-    for (int i = 0; i < 11; i++) {
-        std::cout << i << std::endl;
+    for (int i = 0; i < 12; i++) {
         InfiniteDouble a = InfiniteDouble(testData[i][0]);
         InfiniteDouble b = InfiniteDouble(testData[i][1]);
         InfiniteDouble c = InfiniteDouble(testData[i][2]);
@@ -114,6 +114,30 @@ TEST(infititeDouble, sumRandom) {
             std::cout << InfiniteDouble(a) << " + " << InfiniteDouble(b) << " = " << InfiniteDouble(a + b) << std::endl;
         }
         ASSERT_EQ(InfiniteDouble(a) +InfiniteDouble(b), InfiniteDouble(a + b));
+    }
+
+}
+
+TEST(infititeDouble, clearZeroes) {
+    std::string testData[12][3] = {
+            {"000.001",     "0.001"},
+            {"0.00100",     "0.001"},
+            {"000123.123",  "123.123"},
+            {"00123.12300", "123.123"},
+            {"12001.1001",  "12001.1001"},
+            {"0.1",         "0.1"},
+            {"0.000101",    "0.000101"},
+            {"00000",       "0"},
+            {"0.00",        "0"},
+            {"000.0",       "0"},
+            {"00.00",       "0"},
+            {"1.44",        "1.44"}
+    };
+    for (int i = 0; i < 12; i++) {
+
+        InfiniteDouble a(testData[i][1]);
+        a.clearZeros();
+        ASSERT_EQ(InfiniteDouble(testData[i][1]), a);
     }
 
 }

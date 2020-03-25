@@ -98,27 +98,10 @@ InfiniteDouble::InfiniteDouble(std::string in) {
             }
         }
 
-        bool isZero = true;
-        for (int i = 0; i < digits_.size(); i++) {
-            if (digits_[i] != 0) {
-                isZero = false;
-                break;
-            }
-        }
-        if (isZero) {
-            *this = InfiniteDouble(); // default zero
-            return;
-        }
-        while (digits_[digits_.size() - 1] == 0 && (digits_.size() - 1 - exponent_ > 0)) { // from right
-            digits_.pop_back();
-        }
+
     }
 
-    while ((exponent_ > 0) && (digits_[0] == 0) && ((digits_.size() > 1))) {
-        digits_.erase(digits_.begin());
-        exponent_--;
-    }
-
+    this->clearZeros();
     digits = std::move(digits_);
     exponent = exponent_;
 
@@ -167,38 +150,10 @@ InfiniteDouble InfiniteDouble::operator+(const InfiniteDouble &id) {
     InfiniteDouble res;
     res.sign = 1;
     res.digits = a;
-    res.exponent = std::max(id.exponent, this->exponent);
-    bool isZero = true;
-    for (int i = 0; i < res.digits.size(); i++) {
-        if (res.digits[i] != 0) {
-            isZero = false;
-            break;
-        }
-    }
-    if (isZero) {
-        return InfiniteDouble(); // default zero
-    }
-    if (res.exponent > 1) {
-        while (res.digits[0] == 0 && res.exponent > 1) { // from left
-            res.digits.erase(res.digits.begin());
-            //res.exponent--;
-        }
-    }
-    while (res.digits[res.digits.size() - 1] == 0 && (res.digits.size() > std::abs(res.exponent))) { // from right
-        res.digits.pop_back();
-    }
-    if (res.exponent < 1) {
-        int zeroes = 0;
-        while (true) {
-            zeroes = 0;
-            while (res.digits[zeroes] == 0) {
-                zeroes++;
-            }
-            if (zeroes - 1 > (std::abs(res.exponent))) {
-                res.digits.erase(res.digits.begin());
-            } else { break; }
-        }
-    }
+    res.exponent = std::max(id.exponent, this->exponent) ;
+
+    res.clearZeros();
+
     return res;
 }
 
@@ -228,43 +183,11 @@ InfiniteDouble InfiniteDouble::operator*(const InfiniteDouble &id) {
     if (res.digits[first_zero] != 0) {
         res.exponent++;
     }
-
-    bool isZero = true;
-    for (int i = 0; i < res.digits.size(); i++) {
-        if (res.digits[i] != 0) {
-            isZero = false;
-            break;
-        }
-    }
-    if (isZero) {
-        return InfiniteDouble(); // default zero
-    }
-
-    if (res.exponent > 1) {
-        while (res.digits[0] == 0 && res.exponent > 1) { // from left
-            res.digits.erase(res.digits.begin());
-            //res.exponent--;
-        }
-    }
-    while (res.digits[res.digits.size() - 1] == 0 && (res.digits.size() > std::abs(res.exponent))) { // from right
-        res.digits.pop_back();
-    }
-
-    if (res.digits[0] == 0) {
+    if ( exponent >= 1 && res.digits[0] == 0){
         res.digits.erase(res.digits.begin());
     }
-    if (res.exponent < 1) {
-        int zeroes = 0;
-        while (true) {
-            zeroes = 0;
-            while (res.digits[zeroes] == 0) {
-                zeroes++;
-            }
-            if (zeroes - 1 > (std::abs(res.exponent))) {
-                res.digits.erase(res.digits.begin());
-            } else { break; }
-        }
-    }
+
+    res.clearZeros();
     return res;
 }
 
@@ -355,4 +278,39 @@ bool InfiniteDouble::operator!=(const InfiniteDouble &id) const {
 
 bool InfiniteDouble::isOk() {
     return (sign == 1 || sign == -1);
+}
+
+void InfiniteDouble::clearZeros() {
+    bool isZero = true;
+    for (int i = 0; i < digits.size(); i++) {
+        if (digits[i] != 0) {
+            isZero = false;
+            break;
+        }
+    }
+    if (isZero) {
+        *this = InfiniteDouble(); // default zero
+    }
+
+
+    while (digits[0] == 0 && exponent > 1) { // from left
+        digits.erase(digits.begin());
+    }
+    while (digits[digits.size() - 1] == 0 && (digits.size() > std::abs(exponent))) { // from right
+        digits.pop_back();
+    }
+
+
+    if (exponent < 1) {
+        int zeroes = 0;
+        while (true) {
+            zeroes = 0;
+            while (digits[zeroes] == 0) {
+                zeroes++;
+            }
+            if (zeroes - 1 > (std::abs(exponent))) {
+                digits.erase(digits.begin());
+            } else { break; }
+        }
+    }
 }
