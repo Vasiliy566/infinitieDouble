@@ -21,6 +21,7 @@ InfiniteDouble::InfiniteDouble(std::string in) {
     for (int i = 0; i < in.length(); i++) {
         if (!(isdigit(in[i]) || in[i] == '.' || in[i] == '-')) {
             std::cout << "undefined symbol in string. can be just [\".\", \"-\", numeric] \n";
+            sign = 0;
             return;
         }
         if (in[i] == '.') {
@@ -31,14 +32,14 @@ InfiniteDouble::InfiniteDouble(std::string in) {
     }
     if (signAmount > 1) {
         std::cout << "too many signs in line\n";
+        sign = 0;
         return;
     }
     if (pointAmount > 1) {
         std::cout << "too many points in line\n";
+        sign = 0;
         return;
     }
-
-
 
     if (in[0] == '-') {
         sign = -1;
@@ -58,8 +59,16 @@ InfiniteDouble::InfiniteDouble(std::string in) {
             if (in.length() == start + 1) {
                 exponent_ = 0;
             } else {
-                assert(in[start + 1] == '.');
-                assert(in.length() > start + 2);
+                if (in[start + 1] != '.') {
+                    std::cout << "wrong format\n";
+                    sign = 0;
+                    return;
+                }
+                if (!(in.length() > start + 2)) {
+                    std::cout << "wrong format\n";
+                    sign = 0;
+                    return;
+                }
                 start += 2;
                 while (in[start] == '0' && start < in.length()) {
                     start++;
@@ -90,21 +99,19 @@ InfiniteDouble::InfiniteDouble(std::string in) {
             *this = InfiniteDouble(); // default zero
             return;
         }
-        while (digits_[digits_.size() - 1] == 0 && ( digits_.size() - 1 - exponent_ > 0 )) { // from right
+        while (digits_[digits_.size() - 1] == 0 && (digits_.size() - 1 - exponent_ > 0)) { // from right
             digits_.pop_back();
         }
     }
 
-        while ((exponent_ > 0) && (digits_[0] == 0) && ((digits_.size() > 1)))
-        {
-            digits_.erase(digits_.begin());
-            exponent_--;
-        }
-
+    while ((exponent_ > 0) && (digits_[0] == 0) && ((digits_.size() > 1))) {
+        digits_.erase(digits_.begin());
+        exponent_--;
+    }
 
     digits = std::move(digits_);
     exponent = exponent_;
-    assert(sign == 1);
+
 }
 
 InfiniteDouble::InfiniteDouble(double d) {
@@ -337,4 +344,8 @@ bool InfiniteDouble::operator<=(const InfiniteDouble &id) const {
 
 bool InfiniteDouble::operator!=(const InfiniteDouble &id) const {
     return (!(*this == id));
+}
+
+bool InfiniteDouble::isOk() {
+    return (sign == 1 || sign == -1);
 }

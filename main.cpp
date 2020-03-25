@@ -16,6 +16,9 @@ int main() {
                 return 1;
             }
             nums[i] = InfiniteDouble(line);
+            if (!nums[i].isOk()) {
+                return 1;
+            }
             i++;
         }
         if (i < 1) {

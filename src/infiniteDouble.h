@@ -78,6 +78,9 @@ public:
     // TODO: sum for negative InfiniteDouble
     InfiniteDouble operator+(const InfiniteDouble &id);
 
+    /// return status of num, if sign not in {1, -1} return false;
+    bool isOk();
+
 };
 
 #endif
