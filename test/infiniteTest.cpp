@@ -20,6 +20,9 @@ TEST(infititeDouble, main) {
     std::cout << "[" << a << "]" << std::endl;
     a = InfiniteDouble("0");
     std::cout << "[" << a << "]" << std::endl;
+    a = InfiniteDouble("100.0");
+    std::cout << "[" << a << "]" << std::endl;
+
 
     ASSERT_TRUE(InfiniteDouble("0.001") < InfiniteDouble("0.02"));
 
@@ -40,7 +43,7 @@ TEST(infititeDouble, mulConstants) {
             {"5.17",    "1.11",      "5.7387"},
             {"10",      "0.01",      "0.1"},
             {"10",      "0.0000001", "0.000001"},
-            {"0.09", "0.01", "0.0009"}
+            {"0.09",    "0.01",      "0.0009"}
     };
     for (int i = 0; i < 11; i++) {
         InfiniteDouble a = InfiniteDouble(testData[i][0]);
@@ -53,19 +56,17 @@ TEST(infititeDouble, mulConstants) {
 
 TEST(infititeDouble, sumConstants) {
     std::string testData[11][3] = {
-            {"0.99", "0.01", "1.0"},
-            {"1.5",    "0.5",   "2.0"},
             {"0.001",  "0.02",  "0.021"},
             {"1.001",  "0.001", "1.002"},
             {"11.999", "9.99",  "21.989"},
-            {"111.11", "1.1",  "112.21"},
+            {"111.11", "1.1",   "112.21"},
             {"0.002",  "0.001", "0.003"},
             {"1.2",    "1.2",   "2.4"},
             {"5.17",   "1.11",  "6.28"},
             {"18.222", "2.888", "21.11"},
-
-            {"0.09", "0.01", "0.1"}
-
+            {"0.99",   "0.01",  "1"},
+            {"0.09",   "0.01",  "0.1"},
+            {"1.5",    "0.5",   "2.0"}
     };
 
     for (int i = 0; i < 11; i++) {

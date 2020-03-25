@@ -90,7 +90,7 @@ InfiniteDouble::InfiniteDouble(std::string in) {
             *this = InfiniteDouble(); // default zero
             return;
         }
-        while (digits_[digits_.size() - 1] == 0) { // from right
+        while (digits_[digits_.size() - 1] == 0 && ( digits_.size() - 1 - exponent_ > 0 )) { // from right
             digits_.pop_back();
         }
     }
