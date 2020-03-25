@@ -18,6 +18,11 @@ InfiniteDouble::InfiniteDouble(std::string in) {
     long exponent_ = 0;
     std::vector<int> digits_;
     int start = 0;
+    if (in[in.length() - 1] == '.') {
+        std::cout << "wrong format\n";
+        sign = 0;
+        return;
+    }
     for (int i = 0; i < in.length(); i++) {
         if (!(isdigit(in[i]) || in[i] == '.' || in[i] == '-')) {
             std::cout << "undefined symbol in string. can be just [\".\", \"-\", numeric] \n";
@@ -52,6 +57,10 @@ InfiniteDouble::InfiniteDouble(std::string in) {
             if (isdigit(in[i])) {
                 exponent_++;
                 digits_.push_back((int) in[i] - 48);
+            } else{
+                std::cout << "undefined symbol in string. can be just [\".\", \"-\", numeric] \n";
+                sign = 0;
+                return;
             }
         }
     } else {
@@ -64,6 +73,7 @@ InfiniteDouble::InfiniteDouble(std::string in) {
                     sign = 0;
                     return;
                 }
+
                 if (!(in.length() > start + 2)) {
                     std::cout << "wrong format\n";
                     sign = 0;
