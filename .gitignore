@@ -1,1 +1,11 @@
 build*/
+googletest/
+cmake_install.cmake
+CmakeCache.txt
+CTesttestfile.cmake
+Makefile
+gtest-demo.cbp
+bin/
+.idea/
+.DS_Store
+CMakeFiles/

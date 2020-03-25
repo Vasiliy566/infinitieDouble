@@ -57,7 +57,7 @@ InfiniteDouble::InfiniteDouble(std::string in) {
             if (isdigit(in[i])) {
                 exponent_++;
                 digits_.push_back((int) in[i] - 48);
-            } else{
+            } else {
                 std::cout << "undefined symbol in string. can be just [\".\", \"-\", numeric] \n";
                 sign = 0;
                 return;
@@ -178,7 +178,6 @@ InfiniteDouble InfiniteDouble::operator+(const InfiniteDouble &id) {
     if (isZero) {
         return InfiniteDouble(); // default zero
     }
-
     if (res.exponent > 1) {
         while (res.digits[0] == 0 && res.exponent > 1) { // from left
             res.digits.erase(res.digits.begin());
@@ -188,8 +187,6 @@ InfiniteDouble InfiniteDouble::operator+(const InfiniteDouble &id) {
     while (res.digits[res.digits.size() - 1] == 0 && (res.digits.size() > std::abs(res.exponent))) { // from right
         res.digits.pop_back();
     }
-
-
     if (res.exponent < 1) {
         int zeroes = 0;
         while (true) {
