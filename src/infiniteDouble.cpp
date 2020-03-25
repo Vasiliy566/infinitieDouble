@@ -356,3 +356,27 @@ bool InfiniteDouble::operator!=(const InfiniteDouble &id) const {
 bool InfiniteDouble::isOk() {
     return (sign == 1 || sign == -1);
 }
+
+void InfiniteDouble::clearZeros() {
+    bool isZero = true;
+    for (int i = 0; i < digits.size(); i++) {
+        if (digits[i] != 0) {
+            isZero = false;
+            break;
+        }
+    }
+    if (isZero) {
+        *this = InfiniteDouble(); // default zero
+        return;
+    }
+    while (digits[digits.size() - 1] == 0 && (digits.size() - 1 - exponent > 0)) { // from right
+        digits.pop_back();
+    }
+
+
+    while ((exponent > 0) && (digits[0] == 0) && ((digits.size() > 1))) {
+        digits.erase(digits.begin()
+        );
+        exponent--;
+    }
+}

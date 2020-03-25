@@ -70,7 +70,6 @@ TEST(infititeDouble, sumConstants) {
     };
 
     for (int i = 0; i < 11; i++) {
-        std::cout << i << std::endl;
         InfiniteDouble a = InfiniteDouble(testData[i][0]);
         InfiniteDouble b = InfiniteDouble(testData[i][1]);
         InfiniteDouble c = InfiniteDouble(testData[i][2]);
@@ -114,6 +113,27 @@ TEST(infititeDouble, sumRandom) {
             std::cout << InfiniteDouble(a) << " + " << InfiniteDouble(b) << " = " << InfiniteDouble(a + b) << std::endl;
         }
         ASSERT_EQ(InfiniteDouble(a) +InfiniteDouble(b), InfiniteDouble(a + b));
+    }
+
+}
+TEST(infititeDouble, clearZeroes) {
+    std::string testData[11][3] = {
+            {"000.001",  "0.001"},
+            {"0.00100",  "0.001"},
+            {"000123.123",  "123.123"},
+            {"00123.12300",  "123.123"},
+            {"12001.1001",  "12001.1001"},
+            {"0.1",  "0.1"},
+            {"0.000101",  "0.000101"},
+            {"00000",  "0"},
+            {"0.00",  "0"},
+            {"000.0",  "0"},
+            {"00.00",  "0"},
+    };
+    for (int i = 0; i < 11; i++) {
+        InfiniteDouble a (testData[i][1]);
+        a.clearZeros();
+        ASSERT_EQ(InfiniteDouble(testData[i][1]), a);
     }
 
 }

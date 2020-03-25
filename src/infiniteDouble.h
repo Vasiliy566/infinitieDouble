@@ -81,6 +81,12 @@ public:
     /// return status of num, if sign not in {1, -1} return false;
     bool isOk();
 
+    /// clear usless zeroes from start:
+    /// example:
+    /// 000.123 - > 0.123
+    /// 123123.123000 -> 123123.123
+    void clearZeros();
+
 };
 
 #endif
